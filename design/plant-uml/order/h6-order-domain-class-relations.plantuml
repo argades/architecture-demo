@@ -1,0 +1,72 @@
+@startuml
+rectangle "Domain Layer" {
+  package domain {
+    package ports{
+      interface OrderRepository{
+        + Optional<Order> findById(UUID id);
+        + void save(Order order);
+      }
+
+    }
+
+    package service {
+      class DomainOrderService implements OrderService{
+        - final OrderRepository orderRepository;
+        + DomainOrderService(final OrderRepository orderRepository)
+
+      }
+
+      interface OrderService{
+        + UUID createOrder(Product product);
+        + void addProduct(UUID id, Product product);
+        + void completeOrder(UUID id);
+        + void deleteProduct(UUID id, UUID productId);
+      }
+
+      DomainOrderService --> OrderRepository 
+    }
+
+    package model {
+      class Product{
+        - UUID productId;
+        - BigDecimal price;
+        - String name;
+        + Order(final UUID id, final Product product);
+        + void complete();
+        + void addOrder(final Product product);
+        + void removeOrder(final UUID id);
+        - OrderItem getOrderItem(final UUID id);
+        - void validateState();
+        - void validateProduct(final Product product);
+      }
+      enum OrderStatus {
+        CREATED, COMPLETED;
+      }
+      class Order{
+        - UUID id;
+        - OrderStatus status;
+        - List<OrderItem> orderItems;
+        - BigDecimal price;
+      }
+
+      class OrderItem{
+        - UUID productId;
+        - BigDecimal price;
+        + OrderItem(final Product product)
+      }
+
+      Order ..> OrderStatus
+      Order "1" *..> "*" OrderItem
+      Product  o--> "*" OrderItem
+      OrderRepository -- Order
+
+    }
+
+    package exception{
+      class DomainException
+    }
+
+  }
+}
+
+@enduml

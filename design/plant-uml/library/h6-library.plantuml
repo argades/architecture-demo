@@ -1,0 +1,187 @@
+@startuml
+
+package app {
+    package domain {
+        package model {
+            class Book {
+                -id: int
+                -title: String
+                -author: String
+                +Book(id: int, title: String, author: String)
+                +getId(): int
+                +getTitle(): String
+                +getAuthor(): String
+            }
+
+            class User {
+                -id: int
+                -name: String
+                -email: String
+                +User(id: int, name: String, email: String)
+                +getId(): int
+                +getName(): String
+                +getEmail(): String
+            }
+        }
+
+        package ports {
+            interface BookRepository {
+                +findById(id: int): Book
+                +save(book: Book): Book
+            }
+
+            interface UserRepository {
+                +findById(id: int): User
+                +save(user: User): User
+            }
+        }
+
+        package services {
+            interface BookService {
+                +findBookById(id: int): Book
+                +saveBook(book: Book): Book
+            }
+
+            interface UserService {
+                +findUserById(id: int): User
+                +saveUser(user: User): User
+            }
+
+            class BookServiceImpl {
+                -bookRepository: BookRepository
+                +BookServiceImpl(bookRepository: BookRepository)
+                +findBookById(id: int): Book
+                +saveBook(book: Book): Book
+            }
+
+            class UserServiceImpl {
+                -userRepository: UserRepository
+                +UserServiceImpl(userRepository: UserRepository)
+                +findUserById(id: int): User
+                +saveUser(user: User): User
+            }
+        }
+    }
+
+    package adapters {
+        package api {
+            package controllers {
+                class BookController {
+                    -bookService: BookService
+                    +BookController(bookService: BookService)
+                    +findBookById(id: int): Book
+                    +saveBook(book: Book): Book
+                }
+
+                class UserController {
+                    -userService: UserService
+                    +UserController(userService: UserService)
+                    +findUserById(id: int): User
+                    +saveUser(user: User): User
+                }
+            }
+
+            package dto {
+                class BookDTO {
+                    -id: int
+                    -title: String
+                    -author: String
+                    +BookDTO(id: int, title: String, author: String)
+                    +getId(): int
+                    +getTitle(): String
+                    +getAuthor(): String
+                }
+
+                class UserDTO {
+                    -id: int
+                    -name: String
+                    -email: String
+                    +UserDTO(id: int, name: String, email: String)
+                    +getId(): int
+                    +getName(): String
+                    +getEmail(): String
+                }
+            }
+
+            package security {
+                interface Authentication {
+                    +authenticate(username: String, password: String): boolean
+                }
+
+                class BasicAuthentication {
+                    +authenticate(username: String, password: String): boolean
+                }
+            }
+        }
+
+        package database {
+            package entities {
+                class BookEntity {
+                    -id: int
+                    -title: String
+                    -author: String
+                    +getId(): int
+                    +setTitle(title: String)
+                    +setAuthor(author: String)
+                }
+
+                class UserEntity {
+                    -id: int
+                    -name: String
+                    -email: String
+                    +getId(): int
+                    +setName(name: String)
+                    +setEmail(email: String)
+                }
+            }
+
+            package repositories {
+                interface BookJpaRepository {
+                    +findById(id: int): BookEntity
+                    +save(bookEntity: BookEntity): BookEntity
+                }
+
+                interface UserJpaRepository {
+                    +findById(id: int): UserEntity
+                    +save(userEntity: UserEntity): UserEntity
+                }
+            }
+        }
+
+        package messaging {
+            package consumers {
+                interface MessageConsumer {
+                    +consumeMessage(message: String)
+                }
+            }
+
+            package producers {
+                interface MessageProducer {
+                    +produceMessage(message: String)
+                }
+            }
+        }
+    }
+
+    package config {
+        class ApplicationProperties {
+            -property1: String
+            -property2: int
+            +getProperty1(): String
+            +getProperty2(): int
+        }
+
+        class LoggingProperties {
+            -logLevel: String
+            +getLogLevel(): String
+        }
+    }
+
+    package main {
+        class Application {
+            +main(args: String[])
+        }
+    }
+}
+
+@enduml

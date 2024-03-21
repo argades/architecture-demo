@@ -1,0 +1,49 @@
+@startuml
+rectangle "Infraestructure Layer" {
+
+  package infraestructure {
+    package configuration {
+      class BeanConfiguration
+      class MongoDBConfiguration
+      class KafakaConfiguration
+    }
+
+    package adapters{
+      package mappers{
+
+      }
+
+      package entities{
+        class OrderEntity
+        class OrderDoc
+      }
+
+      interface domain.ports.OrderRepository
+      interface org.springframework.data.mongodb.repository.MongoRepository
+      interface org.springframework.data.cassandra.repository.CassandraRepository <<OrderEntity, UUII>>
+
+      package repository{
+        package casandra{
+          interface CassandraDbOrderRepository implements domain.ports.OrderRepository
+          interface SpringDataCassandraOrderRepository extends org.springframework.data.cassandra.repository.CassandraRepository
+
+        }
+
+        package mongo{
+          class MongoDbOrderRepository implements domain.ports.OrderRepository
+          interface SpringDataMongoOrderRepository extends org.springframework.data.mongodb.repository.MongoRepository
+        }
+
+      }
+    }
+
+  }
+
+  MongoDbOrderRepository --> SpringDataMongoOrderRepository
+  MongoDbOrderRepository --> OrderDoc
+  SpringDataMongoOrderRepository --> OrderDoc
+
+  CassandraDbOrderRepository --> OrderEntity
+  SpringDataCassandraOrderRepository --> OrderEntity
+}
+@enduml

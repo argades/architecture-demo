@@ -1,0 +1,50 @@
+@startuml
+rectangle "Application Layer" {
+  package application {
+    package model {
+      package mappers{
+
+      }
+      package request{
+        class AddProductRequest {
+        }
+        class CreateOrderRequest{
+        }
+
+      }
+      package response{
+        class CreateOrderResponse{
+        }
+
+      }
+
+    }
+
+    package cli{
+      class CliOrderController{
+      }
+
+    }
+
+    package rest {
+      class OrderController {
+      }
+
+    }
+
+    package exception{
+      class DomainException{}
+    }
+  }
+
+  interface domain.service.OrderService
+
+  OrderController --> AddProductRequest
+  OrderController --> CreateOrderRequest
+  OrderController --> CreateOrderResponse
+
+  CreateOrderRequest --> domain.model.Product
+  OrderController --> domain.service.OrderService
+  CliOrderController --> domain.service.OrderService
+}
+@enduml
